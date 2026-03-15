@@ -683,10 +683,6 @@ static bool createDesktopShortcutFromIntegratedDesktopFile(const QString& deskto
     const auto sessionDesktop = qEnvironmentVariable("DESKTOP_SESSION");
     const auto forceValue = qEnvironmentVariable("APPIMAGELAUNCHER_CREATE_DESKTOP_SHORTCUT");
 
-    qInfo() << "Desktop shortcut check for" << desktopFilePath
-            << "XDG_CURRENT_DESKTOP=" << currentDesktop
-            << "DESKTOP_SESSION=" << sessionDesktop
-            << "APPIMAGELAUNCHER_CREATE_DESKTOP_SHORTCUT=" << forceValue;
 
     if (!shouldCreateDesktopShortcut()) {
         qInfo() << "Skipping desktop shortcut creation because desktop environment is not supported";
@@ -697,7 +693,6 @@ static bool createDesktopShortcutFromIntegratedDesktopFile(const QString& deskto
     if (desktopDir.isEmpty())
         desktopDir = QDir::home().filePath("Desktop");
 
-    qInfo() << "Resolved desktop directory:" << desktopDir;
 
     if (desktopDir.isEmpty()) {
         qWarning() << "Desktop directory is empty";
@@ -748,11 +743,9 @@ static bool createDesktopShortcutFromIntegratedDesktopFile(const QString& deskto
 
     if (QFile::exists(statePath)) {
         if (QFile::exists(targetPath)) {
-            qInfo() << "Desktop shortcut already exists and has been managed before, leaving it untouched:" << targetPath;
             return true;
         }
 
-        qInfo() << "Desktop shortcut was managed before and is currently absent, not recreating it:" << targetPath;
         return true;
     }
 
@@ -762,7 +755,6 @@ static bool createDesktopShortcutFromIntegratedDesktopFile(const QString& deskto
         return true;
     }
 
-    qInfo() << "Creating desktop shortcut:" << targetPath;
 
     if (!QFile::copy(desktopFilePath, targetPath)) {
         qWarning() << "Failed to copy desktop file to desktop:" << desktopFilePath << "=>" << targetPath;
@@ -772,7 +764,6 @@ static bool createDesktopShortcutFromIntegratedDesktopFile(const QString& deskto
     makeExecutable(targetPath.toStdString().c_str());
     markDesktopShortcutManaged(desktopFilePath);
 
-    qInfo() << "Desktop shortcut created successfully:" << targetPath;
     return true;
 }
 
@@ -867,7 +858,6 @@ static QString createStableManagedLauncherPath(const QString& pathToAppImage, co
 static QString copyFallbackIcons(const QString& extractedRoot, const QString& integrationId, const QString& originalIconName) {
     const auto trimmedIconName = originalIconName.trimmed();
 
-    qInfo() << "Fallback icon lookup:" << "iconName=" << trimmedIconName << "root=" << extractedRoot;
 
     if (trimmedIconName.isEmpty()) {
         qWarning() << "Fallback desktop file has empty Icon= entry";
@@ -929,7 +919,6 @@ static QString copyFallbackIcons(const QString& extractedRoot, const QString& in
             return;
         }
 
-        qInfo() << "Copied fallback icon:" << sourceIconPath << "->" << targetPath;
     };
 
     if (QFileInfo(trimmedIconName).isAbsolute() && QFileInfo(trimmedIconName).exists()) {
@@ -984,7 +973,6 @@ static QString copyFallbackIcons(const QString& extractedRoot, const QString& in
 }
 
 static bool installDesktopFileAndIconsFallback(const QString& pathToAppImage) {
-    qInfo() << "Trying extraction fallback integration for" << pathToAppImage;
 
     QTemporaryDir tempDir;
     const auto extractedRoot = extractAppImageRoot(pathToAppImage, tempDir);
